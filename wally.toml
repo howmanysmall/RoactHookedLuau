@@ -3,7 +3,7 @@ name = "howmanysmall/roact-hooked-luau"
 version = "0.1.0"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
-exclude = [".vscode", ".gitignore", ".luaurc", "aftman.toml", "roblox.yml", "selene.toml", "sourcemap.json", "stylua.toml", "wally.toml"]
+exclude = [".vscode", ".gitignore", ".luaurc", "aftman.toml", "roblox.yml", "selene.toml", "sourcemap.json", "stylua.toml"]
 description = "A port of littensy's roact-hooked package with a few changes for my code style."
 license = "MIT"
 
