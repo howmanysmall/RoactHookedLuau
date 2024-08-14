@@ -14,6 +14,7 @@ local UseMutable = require(script.UseMutable)
 local UseReducer = require(script.UseReducer)
 local UseRef = require(script.UseRef)
 local UseRendersSpy = require(script.UseRendersSpy)
+local UseSingularMemo = require(script.UseSingularMemo)
 local UseState = require(script.UseState)
 local UseToggle = require(script.UseToggle)
 
@@ -30,6 +31,7 @@ local Hooks = table.freeze({
 	UseReducer = UseReducer;
 	UseRef = UseRef;
 	UseRendersSpy = UseRendersSpy;
+	UseSingularMemo = UseSingularMemo;
 	UseState = UseState;
 	UseToggle = UseToggle;
 

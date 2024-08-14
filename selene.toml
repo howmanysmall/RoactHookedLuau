@@ -1,4 +1,4 @@
-std = "roblox+testez"
+std = "lune"
 
 exclude = ["Vendor/Icon/*", ".lune/**", ".typedefs/**"]
 
