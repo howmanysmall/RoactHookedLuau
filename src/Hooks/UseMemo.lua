@@ -1,26 +1,38 @@
 --!optimize 2
-local HookUtility = require(script.Parent:FindFirstChild("HookUtility"))
+--!strict
 
-local function UseMemo<T>(Factory: () -> T, Dependencies: {unknown}?): T
+--# selene: allow(mixed_table)
+
+local HookUtility = require(script.Parent.HookUtility)
+
+local function Pack<T...>(...: T...)
+	return {
+		n = select("#", ...);
+		select(1, ...);
+	}
+end
+
+local function UseMemo<T...>(create: () -> T..., dependencies: {unknown}?): T...
 	HookUtility.ResolveCurrentlyRenderingComponent()
-	local Hook = HookUtility.CreateWorkInProgressHook()
-	local PreviousState = Hook.MemoizedState
+	local hook = HookUtility.CreateWorkInProgressHook()
+	local previousState = hook.MemoizedState
 
 	if
-		PreviousState ~= nil
-		and Dependencies ~= nil
-		and HookUtility.AreHookInputsEqual(Dependencies, PreviousState.Dependencies)
+		previousState ~= nil
+		and dependencies ~= nil
+		and HookUtility.AreHookInputsEqual(dependencies, previousState.Dependencies)
 	then
-		return PreviousState.Value
+		local value = previousState.Value
+		return table.unpack(value, 1, value.n)
 	end
 
-	local Value = Factory()
-	Hook.MemoizedState = {
-		Dependencies = Dependencies,
-		Value = Value,
+	local values = Pack(create())
+	hook.MemoizedState = {
+		Dependencies = dependencies;
+		Value = values;
 	}
 
-	return Value
+	return table.unpack(values, 1, values.n)
 end
 
 return UseMemo

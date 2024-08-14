@@ -1,11 +1,21 @@
 [package]
 name = "howmanysmall/roact-hooked-luau"
-version = "0.1.0"
+version = "1.0.0"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
-exclude = [".vscode", ".gitignore", ".luaurc", "aftman.toml", "roblox.yml", "selene.toml", "sourcemap.json", "stylua.toml"]
+exclude = [
+	".vscode",
+	".gitignore",
+	".luaurc",
+	"aftman.toml",
+	"roblox.yml",
+	"selene.toml",
+	"sourcemap.json",
+	"stylua.toml",
+]
 description = "A port of littensy's roact-hooked package with a few changes for my code style."
 license = "MIT"
 
 [dependencies]
-Roact = "roblox/roact@1.4.2"
+Roact = "roblox/roact@1.4.4"
+ThreadUtilities = "howmanysmall/thread-utilities@1.0.1"

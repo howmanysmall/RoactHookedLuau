@@ -1,51 +1,53 @@
 --!optimize 2
-local HookUtility = require(script.Parent:FindFirstChild("HookUtility"))
+--!strict
 
-local function UseReducer(Reducer, InitialArgument, Initialize)
-	local Component = HookUtility.ResolveCurrentlyRenderingComponent()
-	local Hook = HookUtility.CreateWorkInProgressHook()
-	local MemoizedState = Hook.MemoizedState
+local HookUtility = require(script.Parent.HookUtility)
+
+local function UseReducer<S, I, A>(reducer: (S, A) -> S, initialArgument: I, initialize: nil | (I) -> S): (S, (A) -> ())
+	local component = HookUtility.ResolveCurrentlyRenderingComponent()
+	local hook = HookUtility.CreateWorkInProgressHook()
+	local memoizedState = hook.MemoizedState
 
 	if not HookUtility.IsReRender then
-		local InitialState
-		if Reducer == HookUtility.BasicStateReducer then
-			if type(InitialArgument) == "function" then
-				InitialState = InitialArgument()
+		local initialState
+		if reducer == HookUtility.BasicStateReducer then
+			if type(initialArgument) == "function" then
+				initialState = initialArgument()
 			else
-				InitialState = InitialArgument
+				initialState = initialArgument
 			end
 		else
-			if Initialize then
-				InitialState = Initialize(InitialArgument)
+			if initialize then
+				initialState = initialize(initialArgument)
 			else
-				InitialState = InitialArgument
+				initialState = initialArgument
 			end
 		end
 
-		local function Dispatch(Action)
-			local PreviousState = MemoizedState.State
-			local NextState = Reducer(PreviousState, Action)
-			if NextState == PreviousState then
+		local function dispatch(action)
+			local previousState = memoizedState.State
+			local nextState = reducer(previousState, action)
+			if nextState == previousState then
 				return
 			end
 
-			MemoizedState.State = NextState
-			Component:setState({
-				[Hook.Index] = NextState,
+			memoizedState.State = nextState
+			component:setState({
+				[hook.Index] = nextState;
 			})
 
-			return NextState
+			return nextState
 		end
 
-		MemoizedState = {
-			Dispatch = Dispatch,
-			State = InitialState,
+		memoizedState = {
+			Dispatch = dispatch;
+			State = initialState;
 		}
 
-		Hook.MemoizedState = MemoizedState
+		hook.MemoizedState = memoizedState
 	end
 
-	return MemoizedState.State, MemoizedState.Dispatch
+	return memoizedState.State, memoizedState.Dispatch
 end
 
 return UseReducer

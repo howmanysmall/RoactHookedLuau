@@ -1,10 +1,12 @@
 --!optimize 2
-local UseMemo = require(script.Parent:FindFirstChild("UseMemo"))
+--!strict
 
-local function UseCallback<T>(Callback: T, Dependencies: {unknown}?): T
+local UseMemo = require(script.Parent.UseMemo)
+
+local function UseCallback<T>(callback: T, dependencies: {unknown}?): T
 	return UseMemo(function()
-		return Callback
-	end, Dependencies)
+		return callback
+	end, dependencies)
 end
 
 return UseCallback

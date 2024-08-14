@@ -1,0 +1,11 @@
+{
+	"name": "test-place",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"$path": "Packages",
+			"RoactHooked": {"$path": "./default.project.json"}
+		}
+	}
+}

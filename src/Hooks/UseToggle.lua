@@ -1,15 +1,20 @@
 --!optimize 2
-local GetDependencies = require(script.Parent:FindFirstChild("GetDependencies"))
-local UseCallback = require(script.Parent:FindFirstChild("UseCallback"))
-local UseState = require(script.Parent:FindFirstChild("UseState"))
+--!strict
 
-local function UseToggle(InitialValue: boolean?): (boolean, () -> ())
-	local Value, SetValue = UseState(not not InitialValue)
-	local ToggleValue = UseCallback(function()
-		SetValue(not Value)
-	end, GetDependencies(Value))
+local UseCallback = require(script.Parent.UseCallback)
+local UseState = require(script.Parent.UseState)
 
-	return Value, ToggleValue
+local function Invert(value: boolean): boolean
+	return not value
+end
+
+local function UseToggle(initialValue: boolean?): (boolean, () -> ())
+	local value, setValue = UseState(not not initialValue)
+	local toggleValue = UseCallback(function()
+		setValue(Invert)
+	end, {})
+
+	return value, toggleValue
 end
 
 return UseToggle

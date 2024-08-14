@@ -1,74 +1,74 @@
 --!optimize 2
-local Roact = require(script.Parent.Parent:FindFirstChild("Roact"))
-local Hooks = require(script.Parent:FindFirstChild("Hooks"))
+
+local Roact = require(script.Parent.Parent.Roact)
+local Hooks = require(script.Parent.Hooks)
 
 local WithHooks = {}
 
-export type IHookOptions<T> = {
+export type HookOptions<T> = {
 	Api: {[any]: any}?,
 	ComponentType: nil | "Component" | "PureComponent" | typeof(Roact.Component),
-	DefaultProps: (T & {[any]: any})?,
+	DefaultProperties: T?,
 	Name: string?,
-	ValidateProps: nil | (props: (T & {[any]: any})?) -> (any, string?),
+	ValidateProperties: nil | (properties: T?) -> (any, string?),
 }
 
-local function WithHooksImplementation<T>(Render: (props: T & {[any]: any}) -> any, Class, Options: IHookOptions<T>?)
-	local TrueOptions: IHookOptions<T> = if Options then Options else {}
-	local ComponentName = TrueOptions.Name or debug.info(Render, "n") or "GenericComponent"
+local function WithHooksImplementation<T>(render: (properties: T) -> any, roactComponentClass, options: HookOptions<T>?)
+	local trueOptions: HookOptions<T> = options or {}
+	local componentName = trueOptions.Name or debug.info(render, "n") or "GenericComponent"
 
-	local ProxyComponent = Class:extend(ComponentName .. "Hooked")
-	ProxyComponent.ComponentName = ComponentName
+	local proxyComponent = roactComponentClass:extend(`{componentName}Hooked`)
+	proxyComponent.ComponentName = componentName
 
-	ProxyComponent.didMount = Hooks.CommitHookEffectListUpdate
-	ProxyComponent.didUpdate = Hooks.CommitHookEffectListUpdate
-	ProxyComponent.willUnmount = Hooks.CommitHookEffectListUnmount
+	proxyComponent.didMount = Hooks.CommitHookEffectListUpdate
+	proxyComponent.didUpdate = Hooks.CommitHookEffectListUpdate
+	proxyComponent.willUnmount = Hooks.CommitHookEffectListUnmount
 
-	function ProxyComponent:render()
+	function proxyComponent:render()
 		Hooks.PrepareToUseHooks(self)
-		local children = Render(self.props)
+		local children = render(self.props)
 		Hooks.FinishHooks()
 		return children
 	end
 
-	ProxyComponent.defaultProps = TrueOptions.DefaultProps
-	ProxyComponent.validateProps = TrueOptions.ValidateProps
+	proxyComponent.defaultProps = trueOptions.DefaultProperties
+	proxyComponent.validateProps = trueOptions.ValidateProperties
 
-	if TrueOptions.Api and type(TrueOptions.Api) == "table" then
-		for Key, Value in TrueOptions.Api do
-			ProxyComponent[Key] = Value
+	if trueOptions.Api and type(trueOptions.Api) == "table" then
+		for key, value in trueOptions.Api do
+			proxyComponent[key] = value
 		end
 	end
 
-	return ProxyComponent
+	return proxyComponent
 end
 
-function WithHooks.WithHooks<T>(Render: (props: T & {[any]: any}) -> any, Options: IHookOptions<T>?)
-	return WithHooksImplementation(Render, Roact.Component, Options)
+function WithHooks.WithHooks<T>(render: (properties: T) -> any, options: HookOptions<T>?)
+	return WithHooksImplementation(render, Roact.Component, options)
 end
 
-function WithHooks.WithHooksPure<T>(Render: (props: T & {[any]: any}) -> any, Options: IHookOptions<T>?)
-	return WithHooksImplementation(Render, Roact.PureComponent, Options)
+function WithHooks.WithHooksPure<T>(render: (properties: T) -> any, options: HookOptions<T>?)
+	return WithHooksImplementation(render, Roact.PureComponent, options)
 end
 
-function WithHooks.new(RoactImplementation)
-	return function<T>(Render: (props: T & {[any]: any}) -> any, Options: IHookOptions<T>?)
-		local TrueOptions: IHookOptions<T> = if Options then Options else {}
-		local ComponentType = TrueOptions.ComponentType
+function WithHooks.new(roactImplementation)
+	return function<T>(render: (properties: T) -> any, options: HookOptions<T>?)
+		local trueOptions: HookOptions<T> = options or {}
+		local componentType = trueOptions.ComponentType
 
-		local ComponentClass
-		if type(ComponentType) == "string" then
-			ComponentClass = if ComponentType == "Component"
-				then RoactImplementation.Component
-				else RoactImplementation.PureComponent
-		elseif type(ComponentType) == "table" then
-			ComponentClass = ComponentType
+		local componentClass
+		if type(componentType) == "string" then
+			componentClass = if componentType == "Component"
+				then roactImplementation.Component
+				else roactImplementation.PureComponent
+		elseif type(componentType) == "table" then
+			componentClass = componentType
 		else
-			ComponentClass = RoactImplementation.PureComponent
+			componentClass = roactImplementation.PureComponent
 		end
 
-		return WithHooksImplementation(Render, ComponentClass, TrueOptions)
+		return WithHooksImplementation(render, componentClass, trueOptions)
 	end
 end
 
-table.freeze(WithHooks)
-return WithHooks
+return table.freeze(WithHooks)

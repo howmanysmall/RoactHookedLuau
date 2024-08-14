@@ -1,17 +1,19 @@
 --!optimize 2
-local HookUtility = require(script.Parent:FindFirstChild("HookUtility"))
+--!strict
 
-local function UseMutable<T>(InitialValue: T): {Current: T}
+local HookUtility = require(script.Parent.HookUtility)
+
+local function UseMutable<T>(initialValue: T): {Current: T}
 	HookUtility.ResolveCurrentlyRenderingComponent()
-	local Hook = HookUtility.CreateWorkInProgressHook()
-	local MemoizedState = Hook.MemoizedState
+	local hook = HookUtility.CreateWorkInProgressHook()
+	local memoizedState = hook.MemoizedState
 
 	if not HookUtility.IsReRender then
-		MemoizedState = {Current = InitialValue}
-		Hook.MemoizedState = MemoizedState
+		memoizedState = {Current = initialValue}
+		hook.MemoizedState = memoizedState
 	end
 
-	return MemoizedState :: {Current: T}
+	return memoizedState :: {Current: T}
 end
 
 return UseMutable

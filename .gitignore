@@ -42,3 +42,4 @@ luac.out
 .vscode
 Packages
 sourcemap.json
+*.code-workspace

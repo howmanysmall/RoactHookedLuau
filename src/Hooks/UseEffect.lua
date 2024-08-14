@@ -1,21 +1,23 @@
 --!optimize 2
-local HookUtility = require(script.Parent:FindFirstChild("HookUtility"))
+--!strict
+
+local HookUtility = require(script.Parent.HookUtility)
 
 type Effect = () -> ()
 type EffectWithCleanup = () -> Effect
 type EffectFunction = Effect | EffectWithCleanup
 
-local function UseEffect(Callback: EffectFunction, Dependencies: {unknown}?)
+local function UseEffect(callback: (() -> () -> ()) | (() -> ()), dependencies: {unknown}?)
 	HookUtility.ResolveCurrentlyRenderingComponent()
-	local Hook = HookUtility.CreateWorkInProgressHook()
+	local hook = HookUtility.CreateWorkInProgressHook()
 
 	if not HookUtility.IsReRender then
-		Hook.MemoizedState = HookUtility.PushEffect(Callback, nil, Dependencies)
+		hook.MemoizedState = HookUtility.PushEffect(callback, nil, dependencies)
 	else
-		local MemoizedState = Hook.MemoizedState
-		MemoizedState.PreviousDependencies = MemoizedState.Dependencies
-		MemoizedState.Dependencies = Dependencies
-		MemoizedState.Create = Callback
+		local memoizedState = hook.MemoizedState
+		memoizedState.PreviousDependencies = memoizedState.Dependencies
+		memoizedState.Dependencies = dependencies
+		memoizedState.Create = callback
 	end
 end
 

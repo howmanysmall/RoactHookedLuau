@@ -1,13 +1,15 @@
 --!optimize 2
-local UseReducer = require(script.Parent:FindFirstChild("UseReducer"))
+--!strict
 
-local function Reducer(Value: number)
-	return (Value + 1) % 1000000
+local UseReducer = require(script.Parent.UseReducer)
+
+local function Reducer(value: number)
+	return (value + 1) % 1_000_000
 end
 
 local function UseForceUpdate(): () -> ()
-	local _, ForceUpdate = UseReducer(Reducer, 0)
-	return ForceUpdate
+	local _, forceUpdate = UseReducer(Reducer, 0)
+	return forceUpdate :: never
 end
 
 return UseForceUpdate

@@ -1,9 +1,14 @@
 --!optimize 2
-local HookUtility = require(script.Parent:FindFirstChild("HookUtility"))
-local UseReducer = require(script.Parent:FindFirstChild("UseReducer"))
+--!strict
 
-local function UseState<T>(InitialState: T): (T, (NewValue: T | <V>(CurrentState: V) -> T) -> ())
-	return UseReducer(HookUtility.BasicStateReducer, InitialState)
+local HookUtility = require(script.Parent.HookUtility)
+local UseReducer = require(script.Parent.UseReducer)
+
+local function UseState<S>(initialState: S | (() -> S)): (S, (((S) -> S) | S) -> ())
+	return UseReducer(
+		HookUtility.BasicStateReducer,
+		if type(initialState) == "function" then initialState() else initialState
+	)
 end
 
 return UseState

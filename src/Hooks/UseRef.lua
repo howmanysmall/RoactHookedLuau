@@ -1,18 +1,20 @@
 --!optimize 2
-local Roact = require(script.Parent.Parent.Parent:FindFirstChild("Roact"))
-local HookUtility = require(script.Parent:FindFirstChild("HookUtility"))
+--!strict
+
+local HookUtility = require(script.Parent.HookUtility)
+local Roact = require(script.Parent.Parent.Parent.Roact)
 
 local function UseRef()
 	HookUtility.ResolveCurrentlyRenderingComponent()
-	local Hook = HookUtility.CreateWorkInProgressHook()
-	local MemoizedState = Hook.MemoizedState
+	local hook = HookUtility.CreateWorkInProgressHook()
+	local memoizedState = hook.MemoizedState
 
 	if not HookUtility.IsReRender then
-		MemoizedState = Roact.createRef()
-		Hook.MemoizedState = MemoizedState
+		memoizedState = Roact.createRef()
+		hook.MemoizedState = memoizedState
 	end
 
-	return MemoizedState
+	return memoizedState
 end
 
 return UseRef

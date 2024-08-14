@@ -1,30 +1,34 @@
 --!optimize 2
-local Hooks = require(script:FindFirstChild("Hooks"))
-local WithHooks = require(script:FindFirstChild("WithHooks"))
+--!strict
 
-local RoactHooked = {}
-RoactHooked.GetDependencies = Hooks.GetDependencies
+local Hooks = require(script.Hooks)
+local Types = require(script.Types)
+local WithHooks = require(script.WithHooks)
 
-RoactHooked.UseBinding = Hooks.UseBinding
-RoactHooked.UseCallback = Hooks.UseCallback
-RoactHooked.UseContext = Hooks.UseContext
-RoactHooked.UseEffect = Hooks.UseEffect
-RoactHooked.UseMemo = Hooks.UseMemo
-RoactHooked.UseReducer = Hooks.UseReducer
-RoactHooked.UseState = Hooks.UseState
-RoactHooked.UseMutable = Hooks.UseMutable
-RoactHooked.UseRef = Hooks.UseRef
+local RoactHooked = table.freeze({
+	GetDependencies = Hooks.GetDependencies;
 
-RoactHooked.UseForceUpdate = Hooks.UseForceUpdate
-RoactHooked.UseMemoCompare = Hooks.UseMemoCompare
-RoactHooked.UseRendersSpy = Hooks.UseRendersSpy
-RoactHooked.UseToggle = Hooks.UseToggle
+	UseBinding = Hooks.UseBinding;
+	UseCallback = Hooks.UseCallback;
+	UseContext = Hooks.UseContext;
+	UseEffect = Hooks.UseEffect;
+	UseForceUpdate = Hooks.UseForceUpdate;
+	UseMemo = Hooks.UseMemo;
+	UseMutable = Hooks.UseMutable;
+	UseReducer = Hooks.UseReducer;
+	UseRef = Hooks.UseRef;
+	UseRendersSpy = Hooks.UseRendersSpy;
+	UseState = Hooks.UseState;
+	UseToggle = Hooks.UseToggle;
 
-RoactHooked.Hook = WithHooks.WithHooks
-RoactHooked.HookPure = WithHooks.WithHooksPure
-RoactHooked.new = WithHooks.new
+	Hook = WithHooks.WithHooks;
+	HookPure = WithHooks.WithHooksPure;
+	new = WithHooks.new;
+})
 
-export type IHookOptions<T> = WithHooks.IHookOptions<T>
+export type HookOptions<T> = WithHooks.HookOptions<T>
 
-table.freeze(RoactHooked)
+export type RoactBinding<T> = Types.RoactBinding<T>
+export type RoactBindingUpdater<T> = Types.RoactBindingUpdater<T>
+
 return RoactHooked

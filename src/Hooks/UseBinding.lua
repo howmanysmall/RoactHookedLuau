@@ -1,26 +1,26 @@
 --!optimize 2
-local Roact = require(script.Parent.Parent.Parent:FindFirstChild("Roact"))
-local HookUtility = require(script.Parent:FindFirstChild("HookUtility"))
-local Types = require(script.Parent.Parent:FindFirstChild("Types"))
+--!strict
 
-type RoactBinding<T> = Types.RoactBinding<T>
+local HookUtility = require(script.Parent.HookUtility)
+local Roact = require(script.Parent.Parent.Parent.Roact)
+local Types = require(script.Parent.Parent.Types)
 
-local function UseBinding<T>(InitialValue: T): (RoactBinding<T>, (NewValue: T) -> ())
+local function UseBinding<T>(initialValue: T): (Types.CoreRoactBinding<T> & Types.RoactBindingMap, (newValue: T) -> ())
 	HookUtility.ResolveCurrentlyRenderingComponent()
-	local Hook = HookUtility.CreateWorkInProgressHook()
-	local MemoizedState = Hook.MemoizedState
+	local hook = HookUtility.CreateWorkInProgressHook()
+	local memoizedState = hook.MemoizedState
 
 	if not HookUtility.IsReRender then
-		local Binding, SetValue = Roact.createBinding(InitialValue)
-		MemoizedState = {
-			Binding = Binding,
-			SetValue = SetValue,
+		local binding, setBinding = Roact.createBinding(initialValue)
+		memoizedState = {
+			Binding = binding,
+			SetValue = setBinding,
 		}
 
-		Hook.MemoizedState = MemoizedState
+		hook.MemoizedState = memoizedState
 	end
 
-	return MemoizedState.Binding, MemoizedState.SetValue
+	return memoizedState.Binding, memoizedState.SetValue
 end
 
 return UseBinding

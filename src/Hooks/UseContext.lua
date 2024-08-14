@@ -1,27 +1,31 @@
 --!optimize 2
-local HookUtility = require(script.Parent:FindFirstChild("HookUtility"))
-local UseEffect = require(script.Parent:FindFirstChild("UseEffect"))
-local UseState = require(script.Parent:FindFirstChild("UseState"))
+--!strict
 
-local function UseContext(Context)
+local HookUtility = require(script.Parent.HookUtility)
+local UseEffect = require(script.Parent.UseEffect)
+local UseState = require(script.Parent.UseState)
+
+local function UseContext(context)
 	HookUtility.ResolveCurrentlyRenderingComponent()
-	local Hook = HookUtility.CreateWorkInProgressHook()
+	local hook = HookUtility.CreateWorkInProgressHook()
 
-	local ContextEntry = Hook.MemoizedState
+	local contextEntry = hook.MemoizedState
 
 	if not HookUtility.IsReRender then
-		local Consumer = setmetatable({}, {__index = HookUtility.CurrentlyRenderingComponent})
-		Context.Consumer.init(Consumer)
-		ContextEntry = Consumer.contextEntry
-		Hook.MemoizedState = ContextEntry
+		local consumer = setmetatable({}, {__index = HookUtility.CurrentlyRenderingComponent})
+		context.Consumer.init(consumer)
+		contextEntry = consumer.contextEntry
+		hook.MemoizedState = contextEntry
 	end
 
-	local Value, SetValue = UseState(ContextEntry and ContextEntry.value)
-	UseEffect(function()
-		return ContextEntry.onUpdate:subscribe(SetValue)
-	end, {})
+	local value, setValue = UseState(contextEntry and contextEntry.value)
 
-	return Value
+	local function subscribeEffect()
+		return contextEntry.onUpdate:subscribe(setValue)
+	end
+	UseEffect(subscribeEffect, {})
+
+	return value
 end
 
 return UseContext

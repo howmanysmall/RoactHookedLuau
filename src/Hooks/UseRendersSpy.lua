@@ -1,14 +1,18 @@
 --!optimize 2
-local UseEffect = require(script.Parent:FindFirstChild("UseEffect"))
-local UseMutable = require(script.Parent:FindFirstChild("UseMutable"))
+--!strict
+
+local UseEffect = require(script.Parent.UseEffect)
+local UseMutable = require(script.Parent.UseMutable)
 
 local function UseRendersSpy(): number
-	local Count = UseMutable(0)
-	UseEffect(function()
-		Count.Current += 1
-	end, {})
+	local count = UseMutable(0)
 
-	return Count.Current
+	local function increment()
+		count.Current += 1
+	end
+	UseEffect(increment, {})
+
+	return count.Current
 end
 
 return UseRendersSpy
