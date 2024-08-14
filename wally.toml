@@ -9,5 +9,7 @@ exclude = ["**"]
 include = ["src", "src/**", "wally.toml", "wally.lock", "default.project.json", "LICENSE"]
 
 [dependencies]
+Promise = "howmanysmall/typed-promise@4.0.3"
 Roact = "roblox/roact@1.4.4"
+Sift = "csqrl/sift@0.0.9"
 ThreadUtilities = "howmanysmall/thread-utilities@1.0.1"
